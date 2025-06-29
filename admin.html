@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body{
+      font-family:sans-serif;
+      display:flex;align-items:center;justify-content:center;
+      min-height:100vh;margin:0;background:#f4f4f4;
+    }
+    .box{
+      background:#fff;padding:32px;border-radius:8px;
+      box-shadow:0 4px 12px rgba(0,0,0,.1);
+      max-width:820px;width:100%;
+    }
+    h2,h3{text-align:center;margin:0 0 24px}
+    input,textarea,button{
+      width:100%;padding:12px;margin-bottom:16px;
+      border-radius:4px;border:1px solid #ddd;box-sizing:border-box;
+      font-family:inherit;font-size:.9rem;
+    }
+    button{
+      background:#ffcf24;border:none;font-weight:700;
+      cursor:pointer;transition:background .3s;
+    }
+    button:hover{background:#e6b820}
+    button:disabled{background:#bbb;cursor:not-allowed}
+    #login-status{text-align:center;margin-top:12px}
+    table{
+      width:100%;border-collapse:collapse;margin-bottom:24px;
+      font-size:.85rem;
+    }
+    th,td{border:1px solid #e0e3e8;padding:8px}
+    th{background:#f6f7f9;text-align:left}
+    tr:nth-child(even){background:#fafafa}
+    .entry-actions button{margin-right:8px;margin-top:6px}
+    .note{font-size:.75rem;color:#777;margin-top:-10px;margin-bottom:10px}
+    .list-box > div{border:1px solid #eee;padding:8px;border-radius:4px;margin-bottom:8px}
+  </style>
+</head>
+<body>
+
+<!-- ------------- LOGIN ------------- -->
+<div class="box" id="loginBox">
+  <h2>Admin Login</h2>
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email admin" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button id="btnLogin">Login</button>
+  </form>
+  <div id="login-status"></div>
+</div>
+
+<!-- ------------- DASHBOARD ------------- -->
+<div class="box" id="dashBox" style="display:none">
+  <h2>Dashboard Admin</h2>
+  <p>Anda login sebagai <strong id="user-email"></strong></p>
+  <button id="btnLogout">Logout</button>
+
+  <!-- Pesan Contact -->
+  <h3>Pesan Contact</h3>
+  <table id="msgTable">
+    <thead><tr><th>Nama</th><th>Email</th><th>Pesan</th><th>Tanggal</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- ---------- HOME ---------- -->
+  <h3>Edit – Home</h3>
+  <input id="homeHeadline"  placeholder="Headline">
+  <textarea id="homeDesc" rows="3" placeholder="Deskripsi singkat"></textarea>
+
+  <input type="file" id="homeFile">
+  <div class="note">Pilih gambar, URL terisi otomatis setelah upload</div>
+  <input id="homeImg" placeholder="URL gambar profil" readonly>
+  <button id="saveHome">Simpan Home</button>
+
+  <!-- ---------- ARTICLES ---------- -->
+  <h3>Edit – Articles</h3>
+  <div id="artList" class="list-box"></div>
+
+  <input id="artId" placeholder="ID (uuid) – kosong = buat baru">
+  <input id="artTitle" placeholder="Judul artikel">
+  <input type="file" id="artFile">
+  <div class="note">Pilih gambar artikel</div>
+  <input id="artImg" placeholder="URL gambar" readonly>
+  <input id="artLink" placeholder="Link Read more">
+  <textarea id="artSummary" rows="3" placeholder="Ringkasan"></textarea>
+  <button id="saveArt">Simpan Article</button>
+
+  <!-- ---------- EXPERIENCE ---------- -->
+  <h3>Edit – Experience</h3>
+  <div id="expList" class="list-box"></div>
+
+  <input id="expId"  placeholder="ID (uuid) – kosong = baru">
+  <input id="expName" placeholder="Nama proyek">
+  <textarea id="expDesc" rows="3" placeholder="Deskripsi"></textarea>
+  <input id="expGit" placeholder="GitHub URL">
+  <button id="saveExp">Simpan Experience</button>
+</div>
+
+<script>
+/* ===== Konfigurasi Supabase ===== */
+const sb = window.supabase.createClient(
+  'https://pnaenxtcbcqrncazotmv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuYWVueHRjYmNxcm5jYXpvdG12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMjUyNjAsImV4cCI6MjA2NjcwMTI2MH0.0P-WP4RuHErzfj4zDKBPq3lH3Bu8Fkl9gk7JH4TakH8'
+);
+const BUCKET = 'public-images';    // pastikan bucket ini sudah public
+
+/* ========= Elemen global ========= */
+const loginBox = document.getElementById('loginBox');
+const dashBox  = document.getElementById('dashBox');
+const loginSt  = document.getElementById('login-status');
+const userEmail= document.getElementById('user-email');
+
+function safeName(name){return name.toLowerCase().replace(/[^a-z0-9_.-]/g,'-').replace(/-+/g,'-');}
+async function uploadImage(file,folder){
+  const ext=file.name.split('.').pop();
+  const filePath=`${folder}/${Date.now()}-${safeName(file.name)}`;
+  const { error }=await sb.storage.from(BUCKET).upload(filePath,file,{ upsert:true, contentType:file.type||'application/octet-stream'});
+  if(error){alert('Upload gagal: '+error.message);return null;}
+  const { data }=sb.storage.from(BUCKET).getPublicUrl(filePath);
+  
+  
+  return data.publicUrl;
+}
+
+/* ========= Auth ========= */
+function showLogin(){ loginBox.style.display='block'; dashBox.style.display='none'; }
+async function showDash(user){
+  loginBox.style.display='none'; dashBox.style.display='block';
+  userEmail.textContent = user.email;
+  await Promise.all([loadMessages(), loadHomeForm(), loadArticles(), loadExperiences()]);
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data:{session} } = await sb.auth.getSession();
+  session ? showDash(session.user) : showLogin();
+});
+
+document.getElementById('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  loginSt.textContent = 'Mencoba login...';
+  const { data, error } = await sb.auth.signInWithPassword({
+    email: email.value.trim(),
+    password: password.value
+  });
+  if (error){
+    loginSt.textContent = 'Gagal: ' + error.message; loginSt.style.color='#e63946';
+  } else {
+    loginSt.textContent = '';
+    showDash(data.user);
+  }
+});
+
+btnLogout.onclick = async () => {
+  await sb.auth.signOut();
+  showLogin();
+  loginSt.textContent = 'Anda sudah logout.'; loginSt.style.color='#333';
+};
+
+/* ========= Pesan contact ========= */
+async function loadMessages(){
+  const tbody = document.querySelector('#msgTable tbody');
+  const { data, error } = await sb.from('messages').select('*').order('created_at', { ascending:false });
+  if (error){
+    tbody.innerHTML = '<tr><td colspan="4">'+error.message+'</td></tr>'; return;
+  }
+  tbody.innerHTML = data.map(m =>
+    `<tr><td>${m.name}</td><td>${m.email}</td><td>${m.message}</td><td>${new Date(m.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}</td></tr>`
+  ).join('');
+}
+
+/* ========= HOME ========= */
+homeFile.addEventListener('change', async e => {
+  const file = e.target.files[0]; if (!file) return;
+  const url = await uploadImage(file,'home');
+  if (url) homeImg.value = url;
+});
+
+async function loadHomeForm(){
+  const { data, error } = await sb.from('home_content').select('*').limit(1).maybeSingle();
+  if (error || !data) return;
+  homeHeadline.value = data.headline || '';
+  homeDesc.value     = data.description || '';
+  homeImg.value      = data.img_url || '';
+}
+
+saveHome.onclick = async ()=>{
+  // ambil baris pertama jika ada
+  const { data:row } = await sb.from('home_content').select('id').limit(1).maybeSingle();
+  let error;
+  if (!row){
+    ({ error } = await sb.from('home_content').insert({
+      headline: homeHeadline.value, description: homeDesc.value, img_url: homeImg.value
+    }));
+  } else {
+    ({ error } = await sb.from('home_content')
+        .update({ headline: homeHeadline.value, description: homeDesc.value, img_url: homeImg.value })
+        .eq('id', row.id)
+    );
+  }
+  alert(error ? 'Gagal: '+error.message : 'Berhasil disimpan');
+};
+
+/* ========= ARTICLES ========= */
+artFile.addEventListener('change', async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const url = await uploadImage(f,'articles');
+  if(url) artImg.value=url;
+});
+
+async function loadArticles(){
+  const list=document.getElementById('artList');
+  const { data, error } = await sb.from('articles').select('*').order('created_at', { ascending:false });
+  if (error){ list.innerHTML = '<p>Gagal memuat data</p>'; return; }
+  list.innerHTML = data.map(a=>`
+    <div>
+      <strong>${a.title}</strong><br>
+      <div class=\"entry-actions\">
+        <button onclick=\"editArticle('${a.id}')\">Edit</button>
+        <button onclick=\"deleteArticle('${a.id}')\">Hapus</button>
+      </div>
+    </div>`).join('');
+}
+
+async function editArticle(id){
+  const { data, error } = await sb.from('articles').select('*').eq('id', id).single();
+  if (error) return alert('Gagal: '+error.message);
+  artId.value=data.id; artTitle.value=data.title;
+  artImg.value=data.image_url; artLink.value=data.link_url; artSummary.value=data.summary;
+}
+
+async function deleteArticle(id){
+  if (!confirm('Hapus artikel ini?')) return;
+  const { error } = await sb.from('articles').delete().eq('id', id);
+  alert(error?'Gagal: '+error.message:'Berhasil dihapus');
+  loadArticles();
+}
+
+saveArt.onclick = async ()=>{
+  if (!artTitle.value || !artImg.value){
+    alert('Judul dan gambar wajib diisi'); return;
+  }
+  const payload = {
+    id: artId.value || undefined,
+    title: artTitle.value,
+    image_url: artImg.value,
+    link_url: artLink.value,
+    summary: artSummary.value
+  };
+  const { error } = await sb.from('articles').upsert(payload, { onConflict:'id' });
+  alert(error?'Gagal: '+error.message:'Berhasil disimpan');
+  artId.value=artTitle.value=artImg.value=artLink.value=artSummary.value='';
+  loadArticles();
+};
+
+/* ========= EXPERIENCE ========= */
+async function loadExperiences(){
+  const list = document.getElementById('expList');
+  const { data, error } = await sb.from('experiences').select('*').order('created_at',{ ascending:false });
+  if (error){ list.innerHTML='<p>Gagal memuat data</p>'; return; }
+  list.innerHTML = data.map(e=>`
+    <div>
+      <strong>${e.name}</strong><br>
+      <div class=\"entry-actions\">
+        <button onclick=\"editExperience('${e.id}')\">Edit</button>
+        <button onclick=\"deleteExperience('${e.id}')\">Hapus</button>
+      </div>
+    </div>`).join('');
+}
+
+async function editExperience(id){
+  const { data, error } = await sb.from('experiences').select('*').eq('id', id).single();
+  if (error) return alert('Gagal: '+error.message);
+  expId.value=data.id; expName.value=data.name; expDesc.value=data.description; expGit.value=data.github_url;
+}
+
+async function deleteExperience(id){
+  if (!confirm('Hapus experience ini?')) return;
+  const { error } = await sb.from('experiences').delete().eq('id', id);
+  alert(error?'Gagal: '+error.message:'Berhasil dihapus');
+  loadExperiences();
+}
+
+saveExp.onclick = async ()=>{
+  if (!expName.value){
+    alert('Nama proyek wajib diisi'); return;
+  }
+  const payload = {
+    id: expId.value || undefined,
+    name: expName.value,
+    description: expDesc.value,
+    github_url: expGit.value
+  };
+  const { error } = await sb.from('experiences').upsert(payload, { onConflict:'id' });
+  alert(error?'Gagal: '+error.message:'Berhasil disimpan');
+  expId.value=expName.value=expDesc.value=expGit.value='';
+  loadExperiences();
+};
+
+</script>
+</body>
+</html>

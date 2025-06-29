@@ -1,0 +1,314 @@
+<!-- index.html – versi dinamis terhubung Supabase -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Wisnu – Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== ADMIN BUTTON ===== -->
+<a href="admin.html" class="btn-admin" aria-label="Admin Panel">
+  <img src="image/account.png" alt="Admin">
+</a>
+
+<!-- ===== SIDEBAR ===== -->
+<nav>
+  <div>
+      <div class="logo">Wporto</div>
+
+      <ul class="menu">
+        <li><a href="#home"       class="active">Home</a></li>
+        <li><a href="#article">Article</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#works">Works</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+
+      <div class="footer">
+  <!-- alamat e‑mail -->
+  <a href="mailto:wisnuadjiepramudya@gmail.com" class="email">
+    wisnuadjiepramudya@gmail.com
+  </a>
+
+  <!-- ikon sosmed -->
+  <div class="socials">
+    <!-- Twitter -->
+    <a href="https://x.com/fckgstp?t=H3Z1m2MoJyIccmItHbdMzA&s=09"
+       target="_blank" rel="noopener" aria-label="Twitter">
+      <img src="image/social-media.png" alt="Twitter" />
+    </a>
+
+    <!-- YouTube -->
+    <a href="https://youtube.com/@wisnuadjiepramudya8353?si=PjSicBDFri41m3wW"
+       target="_blank" rel="noopener" aria-label="YouTube">
+      <img src="image/youtube.png" alt="YouTube" />
+    </a>
+
+    <!-- Instagram -->
+    <a href="https://www.instagram.com/biauakk?igsh=MXA3bXB6MHliOHUxaw=="
+       target="_blank" rel="noopener" aria-label="Instagram">
+      <img src="image/instagram.png" alt="Instagram" />
+    </a>
+  </div>
+</div>
+
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main>
+  <!-- ========== HOME (DYNAMIC) ========== -->
+  <section id="home">
+    <div class="home-wrapper">
+      <div class="photo-block">
+        <div class="shape"></div>
+        <img id="hero-img" src="" alt="Foto Profil" />
+      </div>
+      <div class="hero-text">
+        <small id="hero-job">Designer / Frontend Developer</small>
+        <h1 id="hero-headline"></h1>
+        <p id="hero-desc" class="hero-desc">
+          Deskripsi default…
+        </p>
+      </div>
+    </div>
+    <div class="ghost"></div>
+  </section>
+
+  <!-- ========== ARTICLES (container kosong, diisi JS) ========== -->
+  <section id="article">
+    <div class="articles-container">
+      <h2 class="section-title">Technical Articles</h2>
+      <p class="section-subtitle">Pada halaman Articles ini merupakan beberapa hasil project saya selama berkuliah</p>
+      <div class="card-wrapper" id="articles-wrapper"></div>
+    </div>
+  </section>
+
+  <!-- ========== EXPERIENCE (dynamic project cards) ========== -->
+  <section id="experience">
+    <div class="exp-container">
+      <div class="exp-left">
+        <!-- (bagian kiri tetap statis) -->
+        <h2 class="section-title">Experience</h2>
+          <p class="section-desc">
+            Ringkasan pekerjaan, skill, dan timeline pengalaman profesional.
+          </p>
+
+          <!-- Education Card -->
+          <div class="edu-card">
+            <h3>Education</h3>
+            <h4>Bachelor of Informatics Engineering</h4>
+            <p class="edu-meta">
+              Maritime University of Raja Ali Haji &nbsp;|&nbsp; 2022 – 2026
+            </p>
+            <p class="edu-spec">
+              Specialized in 3D object and software engineer
+            </p>
+          </div>
+
+          <!-- Skill Bars -->
+          <ul class="skill-list">
+            <li>
+              <span>Python</span><span class="percent">75%</span>
+              <div class="bar"><div class="bar-fill" style="--p:75%"></div></div>
+            </li>
+            <li>
+              <span>Java Script</span><span class="percent">75%</span>
+              <div class="bar"><div class="bar-fill" style="--p:75%"></div></div>
+            </li>
+            <li>
+              <span>Figma</span><span class="percent">80%</span>
+              <div class="bar"><div class="bar-fill" style="--p:80%"></div></div>
+            </li>
+            <li>
+              <span>Canva</span><span class="percent">70%</span>
+              <div class="bar"><div class="bar-fill" style="--p:70%"></div></div>
+            </li>
+            <li>
+              <span>Photography</span><span class="percent">86%</span>
+              <div class="bar"><div class="bar-fill" style="--p:86%"></div></div>
+            </li>
+          </ul>
+        </div>
+
+      <div class="exp-right">
+        <div class="project-grid" id="exp-grid"></div>
+        <!-- Personal Info -->
+          <dl class="bio-table">
+            <div><dt>Residence</dt><dd>Indonesia</dd></div>
+            <div><dt>Address</dt><dd>Jln. Ganet Perum Griya Hangtuah Permai</dd></div>
+            <div><dt>E-mail</dt><dd>wisnuajipinang@gmail.com</dd></div>
+            <div><dt>Phone</dt><dd>+6281270388369</dd></div>
+          </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKS -->
+      <section id="works">
+    <div class="works-container">
+      <h2 class="section-title">PRICE PROJECT</h2>
+
+      <div class="price-grid">
+        <!-- 3D PROJECT -->
+        <div class="price-card">
+          <img src="image/3d.jpg" alt="3D Project">
+          <div class="card-label">3D PROJECT</div>
+          <div class="card-price">Rp 1.000.000</div>
+        </div>
+
+        <!-- WEBSITE PROJECT -->
+        <div class="price-card">
+          <img src="image/web.png" alt="Website Project">
+          <div class="card-label">WEBSITE PROJECT</div>
+          <div class="card-price">Rp 1.000.000</div>
+        </div>
+
+        <!-- 3D PROJECT LAGI -->
+        <div class="price-card">
+          <img src="image/regresi.jpg" alt="3D Project 2">
+          <div class="card-label">HARD PROJECT</div>
+          <div class="card-price">Rp 1.000.000</div>
+        </div>
+      </div>
+
+      <div class="student-project">
+        <h3>PROJECT KULIAH</h3>
+        <button>ONLY Rp 400.000</button>
+      </div>
+    </div>
+  </section>
+  <!-- ...  (bagian Works sama) ... -->
+
+  <section id="contact">
+    <div class="contact-container">
+      <h2 class="section-title">CONTACT ME</h2>
+      <p class="section-subtitle">Saya selalu terbuka untuk berbagai diskusi, kerja sama dan menjalin hubungan bisnis</p>
+      <form class="contact-form" id="contactForm">
+        <div class="form-group">
+          <label for="cName">Nama</label>
+          <input type="text" id="cName" name="name" placeholder="Nama lengkap…" required>
+        </div>
+        <div class="form-group">
+          <label for="cEmail">Email</label>
+          <input type="email" id="cEmail" name="email" placeholder="name@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="cMsg">Pesan</label>
+          <textarea id="cMsg" name="message" rows="5" placeholder="Tulis pesan…" required></textarea>
+          <p id="contactMsg" class="contact-msg"></p>
+          <button type="submit" class="btn-submit">Kirim Pesan</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<!-- Supabase & App Script -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ==== Supabase Init ==== */
+const sb = window.supabase.createClient(
+  'https://pnaenxtcbcqrncazotmv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBuYWVueHRjYmNxcm5jYXpvdG12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMjUyNjAsImV4cCI6MjA2NjcwMTI2MH0.0P-WP4RuHErzfj4zDKBPq3lH3Bu8Fkl9gk7JH4TakH8'
+);
+
+/* ==== Render HOME ==== */
+async function renderHome(){
+  const { data, error } = await sb.from('home_content').select('*').limit(1).maybeSingle();
+  if(error||!data) return;
+  document.getElementById('hero-headline').textContent = data.headline;
+  document.getElementById('hero-desc').textContent     = data.description;
+  document.getElementById('hero-img').src              = data.img_url;
+  document.getElementById('hero-job').textContent      = data.sub_headline || 'Designer / Developer';
+}
+
+/* ==== Render ARTICLES ==== */
+async function renderArticles(){
+  const wrap = document.getElementById('articles-wrapper');
+  const { data, error } = await sb.from('articles').select('*').order('created_at',{ascending:false});
+  if(error){ console.error(error); return; }
+  wrap.innerHTML = data.map(a=>`
+    <article class="card">
+      <img src="${a.image_url}" alt="${a.title}">
+      <div class="card-body">
+        <h3>${a.title}</h3>
+        <p>${a.summary}</p>
+        <a href="${a.link_url}" target="_blank">Read more →</a>
+      </div>
+    </article>`).join('');
+}
+
+/* ==== Render EXPERIENCE ==== */
+async function renderExperience(){
+  const grid = document.getElementById('exp-grid');
+  const { data, error } = await sb.from('experiences').select('*').order('created_at',{ascending:false});
+  if(error){ console.error(error); return; }
+  grid.innerHTML = data.map(e=>`
+    <article class="proj-card">
+      <h4 class="proj-title">${e.name}</h4>
+      <p class="proj-desc">${e.description}</p>
+      <a href="${e.github_url}" target="_blank" class="btn-github">View on GitHub</a>
+    </article>`).join('');
+}
+
+/* ==== Contact form save (messages) ==== */
+const contactForm = document.getElementById('contactForm');
+contactForm.addEventListener('submit', async (ev)=>{
+  ev.preventDefault();
+  const fd = new FormData(contactForm);
+  const { error } = await sb.from('messages').insert([{ name:fd.get('name'), email:fd.get('email'), message:fd.get('message') }]);
+  const msg=document.getElementById('contactMsg');
+  if(error){ msg.textContent='Gagal: '+error.message; msg.style.color='#e63946'; }
+  else{ msg.textContent='Pesan terkirim!'; msg.style.color='#2a9d8f'; contactForm.reset(); }
+});
+
+/* ==== on load ==== */
+window.addEventListener('DOMContentLoaded',()=>{
+  renderHome();
+  renderArticles();
+  renderExperience();
+});
+
+/* ===== Smooth scroll + active menu ===== */
+const menuLinks = document.querySelectorAll('ul.menu a');
+const sections  = document.querySelectorAll('main section');
+
+/* scroll ke section ketika diklik */
+menuLinks.forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))
+            .scrollIntoView({behavior:'smooth'});
+  });
+});
+
+/* highlight menu saat section aktif */
+const observer = new IntersectionObserver(entries=>{
+  /* cari entry dengan rasio tertinggi yang sedang terlihat */
+  let top = null;
+  entries.forEach(en => {
+    if (en.isIntersecting && (!top || en.intersectionRatio > top.intersectionRatio)){
+      top = en;
+    }
+  });
+  if (top){
+    const id = top.target.id;
+    menuLinks.forEach(a=>{
+      a.classList.toggle('active', a.getAttribute('href') === '#'+id);
+    });
+  }
+},{
+  root: document.querySelector('main'), // container yang di‑scroll
+  threshold: [0.4, 0.6, 0.9]            // lebih presisi
+});
+sections.forEach(sec => observer.observe(sec));
+</script>
+
+</script>
+</body>
+</html>
